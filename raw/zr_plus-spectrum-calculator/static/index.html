@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>ZR+ Spectrum calculator</title>
+<style>
+  :root{--bg:#0b0f14;--card:#0f141b;--fg:#e8eef6;--mut:#9fb0c2;--b:#1c2430;--acc:#4da3ff}
+  *{box-sizing:border-box} html,body{height:100%}
+  body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif}
+  .wrap{max-width:960px;margin:32px auto;padding:0 16px}
+  h1{margin:0 0 12px 0;font-size:26px}
+  .card{background:var(--card);border:1px solid var(--b);border-radius:16px;padding:16px;margin-top:14px}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  input,select,button,textarea{padding:10px 12px;border-radius:12px;border:1px solid var(--b);background:#0e1520;color:var(--fg)}
+  button{background:var(--acc);border-color:var(--acc);color:#081a33;font-weight:700;cursor:pointer}
+  .out{font-family:ui-monospace,Consolas,monospace;background:#0c121b;border-radius:12px;padding:12px;border:1px solid var(--b);white-space:pre}
+  .mut{color:var(--mut);font-size:13px}
+  .label{font-weight:700;margin-right:6px}
+  .cfgbox{display:grid;gap:10px}
+  textarea.code{width:100%;min-height:150px;resize:vertical;font-family:ui-monospace,Consolas,monospace;white-space:pre}
+
+  /* Hint buttons with tooltips */
+  .hint{
+    position:relative; width:22px; height:22px; line-height:22px;
+    display:inline-grid; place-items:center; flex:0 0 22px;
+    border-radius:999px; border:1px solid #2a3a52; background:#0c1622; color:#9fc6ff;
+    font-weight:800; cursor:help; user-select:none;
+  }
+  .hint::after{
+    content: attr(data-tip);
+    position:absolute; left:100%; top:50%; transform:translate(10px,-50%);
+    background:#0c121b; color:var(--fg); border:1px solid #243246;
+    padding:8px 10px; border-radius:10px; max-width:320px; width:max-content;
+    font-size:12px; line-height:1.35; white-space:normal; opacity:0; pointer-events:none;
+    box-shadow:0 6px 18px rgba(0,0,0,.35);
+    transition:opacity .15s ease;
+  }
+  .hint:hover::after{opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>ZR+ Spectrum calculator</h1>
+
+  <div class="card">
+    <h3>Guide</h3>
+    <div class="mut">
+      <ul>
+        <li>One channel occupies <b>6</b> or <b>7</b> slices. 1 slice = <b>12.5 GHz</b> → total width: 6 → <b>75.0</b> GHz, 7 → <b>87.5</b> GHz.</li>
+        <li>Center is aligned to the <b>6.25 GHz</b> grid; edges are aligned to the <b>12.5 GHz</b> grid.</li>
+        <li>Mode A input: enter center either in <b>THz</b> or in <b>nm</b> — units are auto-detected (e.g. “1534.84”, “1534,84 nm”, “195.325 THz”).</li>
+        <li>Output is always in <b>THz</b>, plus the center shown in <b>nm</b> (separate line).</li>
+        <li>Mode B input: enter the <b>start</b> of the band in THz + number of slices — you’ll get band edges and center (in THz and nm).</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Mode A: Compute from Center (THz/nm)</h3>
+    <div class="row">
+      <label class="label">Slices:</label>
+      <select id="a_slices">
+        <option value="6">6</option>
+        <option value="7">7</option>
+      </select>
+      <button class="hint" type="button" data-tip="Channel width: 6 slices = 75.0 GHz, 7 slices = 87.5 GHz.">?</button>
+
+      <input id="a_value" type="text" placeholder="center: 1534.84 (nm) or 195.325 (THz)"/>
+      <button class="hint" type="button" data-tip="Enter center frequency in THz or wavelength in nm. Units are auto-detected; decimals with dot or comma are accepted.">?</button>
+
+      <button id="a_btn">Compute</button>
+    </div>
+    <div class="mut" style="margin-top:6px">Output in THz. Center (nm) is printed on a separate line.</div>
+    <div class="out" id="a_out">—</div>
+  </div>
+
+  <div class="card">
+    <h3>Mode B: Compute from Start (THz)</h3>
+    <div class="row">
+      <label class="label">Slices:</label>
+      <select id="b_slices">
+        <option value="6">6</option>
+        <option value="7">7</option>
+      </select>
+      <button class="hint" type="button" data-tip="Channel width: 6 slices = 75.0 GHz, 7 slices = 87.5 GHz.">?</button>
+
+      <input id="b_start" type="number" step="0.00001" placeholder="start, THz (e.g. 194.40000)"/>
+      <button class="hint" type="button" data-tip="Enter lower edge (start) of the band in THz on the 12.5 GHz grid.">?</button>
+
+      <button id="b_btn">Compute</button>
+    </div>
+    <div class="out" id="b_out">—</div>
+  </div>
+
+  <div class="card">
+    <h3>Router config (JunOS)</h3>
+    <div class="cfgbox">
+      <div class="row">
+        <label class="label" for="iface">Interface:</label>
+        <input id="iface" type="text" placeholder="et-x/x/x" style="min-width:240px" value="et-x/x/x"/>
+        <button class="hint" type="button" data-tip="Edit the target interface. The wavelength (nm, 2 decimals) comes from the last calculation in Mode A or B.">?</button>
+        <button id="copy_cfg">Copy</button>
+      </div>
+      <textarea readonly id="cfg_text" class="code" placeholder="Compute first — the config with center wavelength (nm) will appear here"></textarea>
+      <div class="mut">The config uses the channel center in nm (2 decimals) from the last calculation.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+async function post(url, data){
+  const r = await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+  if(!r.ok){throw new Error(await r.text())}
+  return r.json();
+}
+const f5 = x => Number(x).toFixed(5);
+const f1 = x => Number(x).toFixed(1);
+const f2 = x => Number(x).toFixed(2);  // nm -> 2 decimals
+
+let lastNm = null; // remember last wavelength (nm) to generate config
+
+function renderConfig(nmMaybe){
+  if(nmMaybe != null) lastNm = nmMaybe;
+  if(lastNm == null) return;
+  const iface = (document.getElementById('iface').value.trim() || 'et-x/x/x');
+  const nmStr = f2(lastNm);
+  const cfg =
+`configure
+set interfaces ${iface} optics-options wavelength ${nmStr}
+show | compare
+commit comment "change wavelength for ${iface} to ${nmStr} nm" and-quit`;
+  document.getElementById('cfg_text').value = cfg;
+}
+
+// === Mode A ===
+document.getElementById('a_btn').onclick = async ()=>{
+  const slices = +document.getElementById('a_slices').value;
+  const value  = document.getElementById('a_value').value.trim();
+  if(!value){ return }
+  const res = await post('/calc_center',{slices, value});
+  const [a,b] = res.band;
+  const c = res.center_thz, w = res.width_ghz, nm = res.center_nm;
+  document.getElementById('a_out').textContent =
+    `(${f5(a)},${f5(b)})\n(${f5(c)},${f1(w)})\nCenter (nm): ${f2(nm)}`;
+  renderConfig(nm);
+};
+
+// === Mode B ===
+document.getElementById('b_btn').onclick = async ()=>{
+  const slices = +document.getElementById('b_slices').value;
+  const start_thz = parseFloat(document.getElementById('b_start').value);
+  if(!start_thz && start_thz !== 0){ return }
+  const res = await post('/calc_from_start',{slices, start_thz});
+  const [a,b] = res.band;
+  const c = res.center_thz, w = res.width_ghz, nm = res.center_nm;
+  document.getElementById('b_out').textContent =
+    `(${f5(a)},${f5(b)})\n(${f5(c)},${f1(w)})\nCenter (nm): ${f2(nm)}`;
+  renderConfig(nm);
+};
+
+// Regenerate config when interface changes
+document.getElementById('iface').addEventListener('input', ()=>renderConfig(null));
+
+// Copy config
+document.getElementById('copy_cfg').onclick = async ()=>{
+  const area = document.getElementById('cfg_text');
+  if(!area.value){ return }
+  try{
+    await navigator.clipboard.writeText(area.value);
+    const btn = document.getElementById('copy_cfg');
+    btn.textContent = 'Copied!';
+    setTimeout(()=>btn.textContent='Copy',1200);
+  }catch(e){
+    area.select(); document.execCommand('copy');
+  }
+};
+</script>
+</body>
+</html>
