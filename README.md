@@ -1,32 +1,26 @@
 # dtools
 
-Единая точка входа для 4 инструментов через один порт `1640`.
+Единая точка входа для 4 инструментов через **внешний порт `1640`**.
 
-## Что сделано
+## Что теперь есть
 
-- На порту `1640` поднимается `nginx`-gateway.
-- Каждый инструмент запускается как отдельный контейнер в одной `docker-compose` сети.
-- Маршрутизация (reverse proxy):
-  - `/zr-plus-spectrum-calculator/` -> `zr_plus_spectrum_calculator:3000`
-  - `/optical-circuit-merger/` -> `optical_circuit_merger:3000`
-  - `/oel-merger/` -> `oel_merger:3000`
-  - `/pw-planner/` -> `pw_planner:3000`
-
-## Структура
-
-- `docker-compose.yml` — оркестрация контейнеров.
-- `nginx/nginx.conf` — проксирование по path-prefix.
-- `scripts/bootstrap_apps.sh` — скрипт для клонирования/обновления 4 репозиториев в `apps/`.
+- Nginx gateway доступен снаружи на `http://<host>:1640`.
+- На корне `/` отдается стартовая страница с кнопками на все инструменты (как вы просили).
+- Инструменты доступны по path-prefix:
+  - `/zr-plus-spectrum-calculator/`
+  - `/optical-circuit-merger/`
+  - `/oel-merger/`
+  - `/pw-planner/`
 
 ## Быстрый старт
 
-### 1) Клонировать инструменты в `apps/`
+### 1) Клонировать/обновить приложения
 
 ```bash
 ./scripts/bootstrap_apps.sh
 ```
 
-### 2) Запустить все сервисы
+### 2) Запустить
 
 ```bash
 docker compose up -d --build
@@ -34,18 +28,21 @@ docker compose up -d --build
 
 ### 3) Проверить
 
-- http://localhost:1640/zr-plus-spectrum-calculator/
-- http://localhost:1640/optical-circuit-merger/
-- http://localhost:1640/oel-merger/
-- http://localhost:1640/pw-planner/
+- Главная с кнопками: `http://<host>:1640/`
+- Инструменты:
+  - `http://<host>:1640/zr-plus-spectrum-calculator/`
+  - `http://<host>:1640/optical-circuit-merger/`
+  - `http://<host>:1640/oel-merger/`
+  - `http://<host>:1640/pw-planner/`
 
-## Важно
+## Файлы
 
-1. Конфигурация рассчитана на то, что внутри каждого сервиса приложение слушает `3000` порт.
-2. Если конкретный инструмент слушает другой порт, поменяйте целевой порт в `nginx/nginx.conf` и/или Dockerfile соответствующего проекта.
-3. Для SPA-приложений иногда нужно задать `basePath`/`publicPath` под соответствующий префикс маршрута.
+- `docker-compose.yml` — контейнеры и публикация порта `1640`.
+- `nginx/nginx.conf` — reverse proxy маршруты и root-страница.
+- `nginx/index.html` — стартовая страница с кнопками.
+- `scripts/bootstrap_apps.sh` — загрузка/обновление репозиториев в `apps/`.
 
-## Команды обслуживания
+## Обслуживание
 
 Остановить:
 

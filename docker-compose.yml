@@ -6,6 +6,7 @@ services:
       - "1640:1640"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/index.html:/usr/share/nginx/html/index.html:ro
     depends_on:
       - zr_plus_spectrum_calculator
       - optical_circuit_merger
