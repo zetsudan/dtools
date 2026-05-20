@@ -61,3 +61,22 @@ docker compose down
 ```bash
 docker compose up -d --build
 ```
+
+
+## Диагностика 502 Bad Gateway
+
+Если главная `/` открывается, а тулзы дают `502`, почти всегда причина — несовпадение upstream-порта в `nginx` и фактического порта внутри контейнера приложения.
+
+В этой конфигурации выставлены такие upstream-порты:
+
+- `zr_plus-spectrum-calculator` -> `3000`
+- `optical-circuit-merger` -> `8000`
+- `oel_merger` -> `9002`
+- `pw_planner` -> `8000`
+
+После изменений обязательно перезапустите:
+
+```bash
+docker compose down
+docker compose up -d --build
+```

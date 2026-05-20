@@ -20,6 +20,7 @@ services:
     container_name: zr-plus-spectrum-calculator
     expose:
       - "3000"
+      - "400"
     restart: unless-stopped
 
   optical_circuit_merger:
@@ -27,6 +28,7 @@ services:
       context: ./apps/optical-circuit-merger
     container_name: optical-circuit-merger
     expose:
+      - "8000"
       - "3000"
     restart: unless-stopped
 
@@ -35,6 +37,7 @@ services:
       context: ./apps/oel_merger
     container_name: oel-merger
     expose:
+      - "9002"
       - "3000"
     restart: unless-stopped
 
@@ -43,5 +46,6 @@ services:
       context: ./apps/pw_planner
     container_name: pw-planner
     expose:
+      - "8000"
       - "3000"
     restart: unless-stopped
