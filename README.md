@@ -69,12 +69,27 @@ docker compose up -d --build
 
 В этой конфигурации выставлены такие upstream-порты:
 
-- `zr_plus-spectrum-calculator` -> `3000`
+- `zr_plus-spectrum-calculator` -> `400`
 - `optical-circuit-merger` -> `8000`
 - `oel_merger` -> `9002`
 - `pw_planner` -> `8000`
 
 После изменений обязательно перезапустите:
+
+```bash
+docker compose down
+docker compose up -d --build
+```
+
+
+## Важный фикс для работы за path-prefix
+
+Исправлены две проблемы:
+
+1. `zr-plus-spectrum-calculator` проксируется на фактический внутренний порт `400`.
+2. Для `pw-planner` добавлены rewrite/sub_filter, чтобы корректно открывались стили и ассеты при работе не из `/`, а из `/pw-planner/`.
+
+После применения обновлений выполните полный перезапуск:
 
 ```bash
 docker compose down

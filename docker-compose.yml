@@ -19,8 +19,8 @@ services:
       context: ./apps/zr_plus-spectrum-calculator
     container_name: zr-plus-spectrum-calculator
     expose:
-      - "3000"
       - "400"
+      - "3000"
     restart: unless-stopped
 
   optical_circuit_merger:
