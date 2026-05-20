@@ -1,0 +1,15 @@
+{
+  "name": "DWDM Tools",
+  "short_name": "DWDM",
+  "start_url": "/home",
+  "display": "standalone",
+  "background_color": "#0b0f14",
+  "theme_color": "#0b0f14",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

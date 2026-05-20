@@ -1,45 +1,94 @@
 <!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>OpenWave Tools</title>
+  <link rel="icon" href="/favicon.svg?v=1" type="image/svg+xml">
+  <link rel="manifest" href="/site.webmanifest?v=1">
+  <meta name="theme-color" content="#0b0f14">
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>DWDM Tools</title>
   <style>
-    :root { color-scheme: light dark; }
-    body { font-family: Inter, system-ui, Arial, sans-serif; margin: 0; padding: 24px; background: #0b1020; color: #e5e7eb; }
-    .wrap { max-width: 920px; margin: 0 auto; }
-    h1 { margin-top: 0; font-size: 28px; }
-    p { color: #cbd5e1; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-top: 20px; }
-    a.card { display: block; padding: 16px; border-radius: 12px; text-decoration: none; background: #111827; border: 1px solid #334155; color: #f8fafc; }
-    a.card:hover { border-color: #60a5fa; transform: translateY(-1px); }
-    .name { font-weight: 700; margin-bottom: 6px; }
-    .path { font-size: 13px; color: #93c5fd; }
+    :root{
+      --bg:#0b0f14; --card:#0f141b; --fg:#e8eef6; --muted:#9fb0c2;
+      --border:#1c2430; --btn:#1a2635; --btn-border:#294057; --btn-hover:#23344a; --accent:#4da3ff;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif}
+    .wrap{max-width:1100px;margin:40px auto;padding:0 16px}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+    h1{margin:0;font-size:26px}
+    .badge{padding:6px 10px;border-radius:999px;background:#e3f1ff;color:#0a2950;border:1px solid #a7cff6}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px}
+    .grid{display:grid;grid-template-columns:repeat(3,minmax(220px,1fr));gap:14px;margin-top:10px}
+    @media (max-width:900px){.grid{grid-template-columns:repeat(2,minmax(220px,1fr))}}
+    @media (max-width:560px){.grid{grid-template-columns:1fr}}
+    a.btn{display:flex;gap:12px;align-items:center;padding:16px 14px;background:var(--btn);border:1px solid var(--btn-border);border-radius:14px;
+      color:var(--fg);text-decoration:none;font-weight:600;transition:.15s ease; box-shadow:0 0 0 rgba(0,0,0,0);}
+    a.btn:hover{background:var(--btn-hover);transform:translateY(-1px); box-shadow:0 4px 16px rgba(0,0,0,.25)}
+    .btn small{display:block;font-weight:500;color:var(--muted)}
+    .icon{width:22px;height:22px;flex:0 0 22px;display:inline-block}
+    .foot{margin-top:20px;color:var(--muted);font-size:13px;text-align:center}
+    .foot a{color:var(--accent);text-decoration:none}
+    .foot a:hover{text-decoration:underline}
   </style>
 </head>
 <body>
   <div class="wrap">
-    <h1>OpenWave — инструменты</h1>
-    <p>Единая стартовая страница. Выберите нужный инструмент:</p>
+    <header>
+      <h1>My tools</h1>
+      <span class="badge">RETN</span>
+    </header>
 
-    <div class="grid">
-      <a class="card" href="/zr-plus-spectrum-calculator/">
-        <div class="name">ZR+ Spectrum Calculator</div>
-        <div class="path">/zr-plus-spectrum-calculator/</div>
-      </a>
-      <a class="card" href="/optical-circuit-merger/">
-        <div class="name">Optical Circuit Merger</div>
-        <div class="path">/optical-circuit-merger/</div>
-      </a>
-      <a class="card" href="/oel-merger/">
-        <div class="name">OEL Merger</div>
-        <div class="path">/oel-merger/</div>
-      </a>
-      <a class="card" href="/pw-planner/">
-        <div class="name">PW Planner</div>
-        <div class="path">/pw-planner/</div>
-      </a>
+    <div class="card">
+      <div class="grid">
+        <!-- 1) Optical circuits merger -->
+        <a class="btn" href="/optical-circuit-merger/" target="_blank" rel="noopener">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="#4da3ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 12h16M12 4v16M5 5l14 14M19 5L5 19"/>
+          </svg>
+          <div>
+            Optical circuits merger
+            <small>Merging optical circuits files (.tsv format) into one (.xlsx format), with comparison by passband (C-band grid)</small>
+          </div>
+        </a>
+
+        <!-- 2) ZR+ spectrum calculator -->
+        <a class="btn" href="/zr-plus-spectrum-calculator/" target="_blank" rel="noopener">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="#4da3ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"/><path d="M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0z"/>
+          </svg>
+          <div>
+            ZR+ Spectrum calculator
+            <small>Calculating the spectrum capacity for ZR+ transceiver (12.5 GHz grid, 6.25 GHz step)</small>
+          </div>
+        </a>
+
+        <!-- 3) OEL Merger -->
+        <a class="btn" href="/oel-merger/" target="_blank" rel="noopener">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="#4da3ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 15v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4"/><path d="M7 10l5-5 5 5"/><path d="M12 15V5"/>
+          </svg>
+          <div>
+            OEL Merger
+            <small>Merge of free spectrum for 1, 2 or more OELs</small>
+          </div>
+        </a>
+
+        <!-- 4) PW Planner -->
+        <a class="btn" href="/pw-planner/" target="_blank" rel="noopener">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="#4da3ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="4" width="18" height="16" rx="2" ry="2"/><path d="M3 9h18"/><path d="M8 2v4M16 2v4"/><path d="M9 14l2 2 4-4"/>
+          </svg>
+          <div>
+            PW Planner
+            <small>Generate Planned Work emails</small>
+          </div>
+        </a>
+      </div>
     </div>
+
+    <div class="foot"><a href="https://t.me/kartemev" target="_blank" rel="noopener">@kartemev в Telegram</a></div>
   </div>
 </body>
 </html>
