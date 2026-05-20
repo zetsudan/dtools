@@ -6,32 +6,15 @@ from decimal import Decimal, ROUND_HALF_UP
 from pathlib import Path
 import re
 
-APP_DIR = Path(__file__).parent.resolve()
+APP_DIR = Path(__file__).parent
 DATA_DIR = APP_DIR / "data"
-
-
-def resolve_static_dir() -> Path:
-    """Находим директорию static в разных сценариях запуска (локально/в контейнере)."""
-    candidates = [
-        APP_DIR / "static",
-        Path("/app/static"),
-    ]
-    for candidate in candidates:
-        if candidate.exists():
-            return candidate
-    raise FileNotFoundError(
-        "Static directory not found. Checked: " + ", ".join(str(c) for c in candidates)
-    )
-
-
-STATIC_DIR = resolve_static_dir()
 
 # шаги сетки (в THz)
 STEP_12_5 = Decimal("0.0125")   # 12.5 GHz
 STEP_6_25 = Decimal("0.00625")  # 6.25  GHz
 
 app = FastAPI(title="C-band helper")
-app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
+app.mount("/static", StaticFiles(directory=str(APP_DIR / "static")), name="static")
 
 # ---------- точные округления ----------
 def q(x, nd=5) -> float:
@@ -131,7 +114,7 @@ def health():
 
 @app.get("/", response_class=HTMLResponse)
 def index():
-    return (STATIC_DIR / "index.html").read_text(encoding="utf-8")
+    return (APP_DIR / "static" / "index.html").read_text(encoding="utf-8")
 
 @app.post("/calc_center")
 def calc_center(payload: CalcByCenter):
